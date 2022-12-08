@@ -408,6 +408,17 @@ class QueueJob(models.Model):
                     limit=1000,
                 )
                 if jobs:
+                    for job in jobs:
+                        if "YRU" in job.name:
+                            try:
+                                channel_obj = self.env['mail.channel']
+                                channel_id = channel_obj.search([('id', '=', 1)])
+                                channel_id.message_post(
+                                    body="Yearly Revenue Updated for job " + str(job.name),
+                                    subtype_id=1,
+                                )
+                            except Exception as e:
+                                _logger.critical(e)
                     jobs.unlink()
                 else:
                     break
